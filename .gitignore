@@ -8,3 +8,8 @@ wheels/
 
 # Virtual environments
 .venv
+
+# logs and stuff
+wandb/
+logs/
+tensorboard_log/

@@ -82,15 +82,24 @@ def main():
         )
     ])
 
-    model.learn(total_timesteps=100_000, callback=callbacks) #callback=WandbCallback(verbose=2))
+    eval_env = gym.make(env_id, render_mode="human")
 
-    eval_env = DummyVecEnv([lambda: gym.make(env_id, render_mode="human")])
+    for i in range(20):
+        model = model.learn(total_timesteps=100_000, callback=callbacks, reset_num_timesteps=False)
 
-    obs = eval_env.reset()
-    for _ in range(1000):
-        action, _ = model.predict(obs)
-        obs, rewards, dones, info = eval_env.step(action)
-        # eval_env.render()
+        
+
+        obs = eval_env.reset()
+        sum_r = 0.0
+        for t in range(1000):
+            action, _ = model.predict(obs)
+            obs, reward, done, info = eval_env.step(action)
+            sum_r += reward
+            if done:
+                break
+        
+        data = {"sum_reward": sum_r, "t": t}
+        wandb.log(data)
 
     wandb.finish()
 
