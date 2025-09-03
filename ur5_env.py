@@ -96,10 +96,9 @@ class ur5(MujocoEnv):
         ee_finger_xpos = self.data.body("ee_finger").xpos
 
         pos_error = np.linalg.norm(ee_finger_xpos - tape_roll_xpos)
-        terminated = pos_error < 0.05  # Success if within 5cm
+        terminated = pos_error < 0.06 + 0.02  # Success if within 2cm (6cm radius for cylinder)
 
         truncated = False
-        
 
         return obs, reward, terminated, truncated, {}
 

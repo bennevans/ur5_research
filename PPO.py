@@ -82,8 +82,8 @@ def main():
         )
     ])
 
-    eval_env = gym.make(env_id, render_mode="human")
 
+    eval_env = DummyVecEnv([lambda: gym.make(env_id, render_mode="human")])
     for i in range(20):
         model = model.learn(total_timesteps=100_000, callback=callbacks, reset_num_timesteps=False)
 
@@ -93,14 +93,13 @@ def main():
         sum_r = 0.0
         for t in range(1000):
             action, _ = model.predict(obs)
-            obs, reward, done, info = eval_env.step(action)
-            sum_r += reward
-            if done:
+            obs, rewards, dones, info = eval_env.step(action)
+            sum_r += rewards
+            if dones.any():
                 break
         
         data = {"sum_reward": sum_r, "t": t}
         wandb.log(data)
-
     wandb.finish()
 
 
